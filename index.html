@@ -1,0 +1,2040 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Controle de Produção — Bonecas Reborn</title>
+<style>
+  :root{
+    --amber:#BA7517;
+    --amber-light:#FAEEDA;
+    --amber-dark:#8a5811;
+    --bg:#FAF9F7;
+    --card:#FFFFFF;
+    --border:#E5E1DA;
+    --text:#2B2924;
+    --text-soft:#736B5E;
+    --text-faint:#A89F90;
+    --red:#A32D2D;
+    --red-bg:#FBEAEA;
+    --green:#3B6D11;
+    --green-bg:#EEF5E6;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  #root{max-width:760px;margin:0 auto;padding-bottom:3rem;}
+  .header{padding:1.4rem 1.25rem 1rem;border-bottom:1px solid var(--border);background:var(--card);}
+  .header h1{font-size:18px;font-weight:600;margin:0;}
+  .header p{font-size:12px;color:var(--text-soft);margin:4px 0 0;}
+  .tabs{display:flex;overflow-x:auto;background:var(--card);border-bottom:1px solid var(--border);padding:0 0.75rem;position:sticky;top:0;z-index:5;}
+  .tab-btn{padding:11px 13px;font-size:13px;white-space:nowrap;background:none;border:none;cursor:pointer;color:var(--text-soft);border-bottom:2px solid transparent;}
+  .tab-btn.active{color:var(--text);font-weight:600;border-bottom-color:var(--amber);}
+  .content{padding:1.1rem 1.25rem;}
+  .section-label{font-size:11px;font-weight:600;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.07em;margin:18px 0 8px;}
+  .section-label:first-child{margin-top:0;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem;margin-bottom:12px;}
+  .card-accent{border-color:var(--amber);box-shadow:0 0 0 1px rgba(186,117,23,0.15);}
+  .card.flat{padding:0;overflow:hidden;}
+  .row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);gap:10px;}
+  .row:last-child{border-bottom:none;}
+  .row-title{font-size:14px;}
+  .row-sub{font-size:11px;color:var(--text-soft);margin-top:2px;}
+  .meta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+  .meta-grid.cols-2{grid-template-columns:repeat(2,1fr);}
+  .meta-card{background:var(--amber-light);border-radius:8px;padding:0.7rem 0.85rem;}
+  .meta-card .l{font-size:10.5px;color:var(--amber-dark);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:3px;}
+  .meta-card .v{font-size:19px;font-weight:600;color:var(--text);}
+  .meta-card .v.small{font-size:15px;}
+  .pecas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;}
+  .pecas-grid .cell{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:#F4F2EE;border-radius:6px;font-size:12.5px;}
+  .pecas-grid .cell input{width:58px;text-align:right;padding:3px 6px;font-size:13px;border:1px solid var(--border);border-radius:5px;}
+  input,select{font-family:inherit;font-size:13.5px;padding:6px 9px;border:1px solid var(--border);border-radius:7px;background:#fff;color:var(--text);}
+  input:focus,select:focus{outline:2px solid var(--amber-light);border-color:var(--amber);}
+  label{font-size:13px;color:var(--text);}
+  .btn{padding:8px 16px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;}
+  .btn-primary{background:var(--amber);color:#fff;}
+  .btn-primary:disabled{background:#E5E1DA;color:var(--text-faint);cursor:default;}
+  .btn-secondary{background:transparent;border:1px solid var(--border);color:var(--text-soft);}
+  .btn-danger{background:transparent;border:1px solid var(--red);color:var(--red);}
+  .btn-sm{padding:5px 11px;font-size:12px;}
+  .stepper{display:flex;align-items:center;gap:9px;}
+  .stepper button{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .stepper span{min-width:20px;text-align:center;font-weight:600;font-size:15px;}
+  .banner{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
+  .banner.error{background:var(--red-bg);color:var(--red);}
+  .banner.success{background:var(--green-bg);color:var(--green);}
+  .banner button{background:none;border:none;cursor:pointer;font-size:14px;color:inherit;opacity:0.7;}
+  .helptext{font-size:12.5px;color:var(--text-soft);line-height:1.55;margin-bottom:14px;}
+  table.simple{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.simple th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-soft);padding:6px 8px;border-bottom:1px solid var(--border);}
+  table.simple td{padding:7px 8px;border-bottom:1px solid var(--border);}
+  table.simple tr:last-child td{border-bottom:none;}
+  .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:16px;}
+  .day-btn{aspect-ratio:1;border-radius:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--border);background:transparent;padding:2px;}
+  .day-btn.has{background:var(--amber-light);}
+  .day-btn.active{border:2px solid var(--amber);}
+  .day-btn .d{font-size:13px;font-weight:600;}
+  .day-btn .n{font-size:9.5px;color:var(--amber-dark);margin-top:1px;}
+  .empty-msg{font-size:13px;color:var(--text-soft);text-align:center;padding:1.4rem 0;}
+  .formgrid{display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+  .formgrid .grow{flex:1;}
+  .badge{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--amber-light);color:var(--amber-dark);font-weight:600;}
+  .badge.ok{background:var(--green-bg);color:var(--green);}
+  .badge.bad{background:var(--red-bg);color:var(--red);}
+  .footer-note{font-size:11px;color:var(--text-faint);text-align:center;margin-top:18px;}
+  hr.sep{border:none;border-top:1px solid var(--border);margin:14px 0;}
+  .editable-row input[type=text]{width:100%;}
+  .editable-row .num{width:64px;text-align:right;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.24.0/babel.min.js"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useMemo, useRef } = React;
+
+/* ============================== DEFAULT CATALOG ============================== */
+
+const DEFAULT_INSUMOS = [
+  { id: "resina_e67", label: "Resina E67" },
+  { id: "dotp", label: "Plastificante DOTP" },
+  { id: "dibp", label: "Plastificante DIBP" },
+  { id: "icz221b", label: "Estabilizante ICZ221B" },
+  { id: "silicone", label: "Silicone" },
+  { id: "drapex", label: "Drapex" },
+  { id: "oxido_calcio", label: "Óxido de Cálcio" },
+  { id: "pigmento_d17432", label: "Pigmento D17432" },
+  { id: "essencia", label: "Essência" },
+];
+
+const DEFAULT_FORMULA = {
+  resina_e67: 100, dotp: 70, dibp: 10, icz221b: 4, silicone: 5,
+  drapex: 6, oxido_calcio: 1.5, pigmento_d17432: 1.5, essencia: 0.5,
+};
+
+// Corpo: papéis fixos da montagem (não podem ser adicionados/removidos, só editados)
+const DEFAULT_CORPO = [
+  { id: "braco_dir", label: "Braço direito", pecasPorTira: 10, pesoKg: 0.100 },
+  { id: "braco_esq", label: "Braço esquerdo", pecasPorTira: 10, pesoKg: 0.100 },
+  { id: "perna_dir", label: "Perna direita", pecasPorTira: 8, pesoKg: 0.065 },
+  { id: "perna_esq", label: "Perna esquerda", pecasPorTira: 8, pesoKg: 0.065 },
+  { id: "torso_f", label: "Torso menina", pecasPorTira: 6, pesoKg: 0.180 },
+  { id: "torso_m", label: "Torso menino", pecasPorTira: 6, pesoKg: 0.180 },
+];
+
+// Modelos (cabeças): livremente editável/adicionável/removível
+// torsoMode: "choice" (escolhe na montagem) | "f" (sempre menina) | "m" (sempre menino)
+const DEFAULT_MODELOS = [
+  { id: "loulou", label: "LouLou", pecasPorTira: 6, pesoKg: 0.180, torsoMode: "choice", note: "sem cabelo · sem olho" },
+  { id: "shayan", label: "Shayan", pecasPorTira: 6, pesoKg: 0.180, torsoMode: "f", note: "com cabelo" },
+  { id: "hillary", label: "Hillary", pecasPorTira: 6, pesoKg: 0.180, torsoMode: "f", note: "com cabelo" },
+  { id: "luna", label: "Luna", pecasPorTira: 6, pesoKg: 0.180, torsoMode: "f", note: "sem cabelo" },
+  { id: "brenda", label: "Brenda", pecasPorTira: 6, pesoKg: 0.180, torsoMode: "f", note: "sem cabelo" },
+];
+
+const DEFAULT_TIRAS = { braco_dir: 2, braco_esq: 2, perna_dir: 2, perna_esq: 2, torso_f: 2, torso_m: 2, loulou: 3, shayan: 1, hillary: 0, luna: 0, brenda: 0 };
+
+const STORAGE_KEY = "reborn_producao_v2";
+const SYNC_KEY = "reborn_sync_config_v1";
+
+function buildDefaultState() {
+  const corpo = DEFAULT_CORPO.map(c => ({ ...c }));
+  const modelos = DEFAULT_MODELOS.map(m => ({ ...m }));
+  const insumos = DEFAULT_INSUMOS.map(i => ({ ...i }));
+  const pecaIds = [...corpo, ...modelos].map(p => p.id);
+  return {
+    catalog: { insumos, corpo, modelos },
+    formula: { ...DEFAULT_FORMULA },
+    insumosStock: Object.fromEntries(insumos.map(i => [i.id, { stockKg: 0, avgPrice: 0 }])),
+    comprasLog: [],
+    ajustesLog: [],
+    massaPool: { kg: 0, avgCost: 0 },
+    misturaLog: [],
+    pecaStock: Object.fromEntries(pecaIds.map(id => [id, { qty: 0, avgCost: 0 }])),
+    tiras: Object.fromEntries(pecaIds.map(id => [id, DEFAULT_TIRAS[id] || 0])),
+    lotesHoje: [],
+    perdasHojeAccum: Object.fromEntries(pecaIds.map(id => [id, 0])),
+    bonecasStock: Object.fromEntries(modelos.map(m => [m.id, { qty: 0, avgCost: 0 }])),
+    montagemHoje: [],
+    historico: {},
+  };
+}
+
+const DEFAULT_STATE = buildDefaultState();
+
+/* ============================== HELPERS ============================== */
+
+function slugify(label, existingIds) {
+  let base = (label || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  if (!base) base = "item";
+  let id = base, n = 2;
+  while (existingIds.indexOf(id) !== -1) { id = base + "_" + n; n++; }
+  return id;
+}
+
+function shortCode(label) {
+  const words = (label || "").trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return "??";
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return words.slice(0, 3).map(w => w[0]).join("").toUpperCase();
+}
+
+function getPecaList(catalog) { return [...catalog.corpo, ...catalog.modelos]; }
+
+function getLabel(catalog, id) {
+  const f = getPecaList(catalog).find(p => p.id === id);
+  return f ? f.label : id;
+}
+
+function combinSummary(tiras, catalog) {
+  return Object.keys(tiras).filter(id => (tiras[id] || 0) > 0).map(id => {
+    const label = getLabel(catalog, id);
+    return `${tiras[id]}${shortCode(label)}`;
+  }).join(" ");
+}
+
+function mergeWithDefaults(pulled) {
+  if (!pulled || typeof pulled !== "object") return buildDefaultState();
+  const catalog = {
+    insumos: (pulled.catalog && Array.isArray(pulled.catalog.insumos) && pulled.catalog.insumos.length) ? pulled.catalog.insumos : DEFAULT_INSUMOS.map(i => ({ ...i })),
+    corpo: (pulled.catalog && Array.isArray(pulled.catalog.corpo) && pulled.catalog.corpo.length) ? pulled.catalog.corpo : DEFAULT_CORPO.map(c => ({ ...c })),
+    modelos: (pulled.catalog && Array.isArray(pulled.catalog.modelos)) ? pulled.catalog.modelos : DEFAULT_MODELOS.map(m => ({ ...m })),
+  };
+  const pecaIds = [...catalog.corpo, ...catalog.modelos].map(p => p.id);
+  const insumoIds = catalog.insumos.map(i => i.id);
+  const pInsumosStock = pulled.insumosStock || {};
+  const pFormula = pulled.formula || {};
+  const pPecaStock = pulled.pecaStock || {};
+  const pTiras = pulled.tiras || {};
+  const pPerdas = pulled.perdasHojeAccum || {};
+  const pBonecasStock = pulled.bonecasStock || {};
+
+  return {
+    catalog,
+    formula: Object.fromEntries(insumoIds.map(id => [id, pFormula[id] != null ? pFormula[id] : (DEFAULT_FORMULA[id] || 0)])),
+    insumosStock: Object.fromEntries(insumoIds.map(id => [id, { stockKg: 0, avgPrice: 0, ...(pInsumosStock[id] || {}) }])),
+    comprasLog: Array.isArray(pulled.comprasLog) ? pulled.comprasLog : [],
+    ajustesLog: Array.isArray(pulled.ajustesLog) ? pulled.ajustesLog : [],
+    massaPool: { kg: 0, avgCost: 0, ...(pulled.massaPool || {}) },
+    misturaLog: Array.isArray(pulled.misturaLog) ? pulled.misturaLog : [],
+    pecaStock: Object.fromEntries(pecaIds.map(id => [id, { qty: 0, avgCost: 0, ...(pPecaStock[id] || {}) }])),
+    tiras: Object.fromEntries(pecaIds.map(id => [id, pTiras[id] != null ? pTiras[id] : (DEFAULT_TIRAS[id] || 0)])),
+    lotesHoje: Array.isArray(pulled.lotesHoje) ? pulled.lotesHoje : [],
+    perdasHojeAccum: Object.fromEntries(pecaIds.map(id => [id, pPerdas[id] != null ? pPerdas[id] : 0])),
+    bonecasStock: Object.fromEntries(catalog.modelos.map(m => [m.id, { qty: 0, avgCost: 0, ...(pBonecasStock[m.id] || {}) }])),
+    montagemHoje: Array.isArray(pulled.montagemHoje) ? pulled.montagemHoje : [],
+    historico: (() => {
+      const raw = (pulled.historico && typeof pulled.historico === "object") ? pulled.historico : {};
+      const migrated = {};
+      for (const key in raw) {
+        // Se a chave for numérica (formato antigo 1-31), migra para Julho/2026
+        if (/^\d{1,2}$/.test(key)) {
+          const newKey = `2026-07-${String(key).padStart(2, "0")}`;
+          migrated[newKey] = raw[key];
+        } else {
+          migrated[key] = raw[key];
+        }
+      }
+      return migrated;
+    })(),
+  };
+}
+
+function usePersistedState(key, initial) {
+  const [state, setState] = useState(() => {
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw) return mergeWithDefaults(JSON.parse(raw));
+      return initial;
+    } catch (e) { return initial; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem(key, JSON.stringify(state)); } catch (e) {}
+  }, [state]);
+  return [state, setState];
+}
+
+function useSyncConfig() {
+  const [cfg, setCfg] = useState(() => {
+    try {
+      const raw = localStorage.getItem(SYNC_KEY);
+      return raw ? JSON.parse(raw) : { url: "", token: "" };
+    } catch (e) { return { url: "", token: "" }; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem(SYNC_KEY, JSON.stringify(cfg)); } catch (e) {}
+  }, [cfg]);
+  return [cfg, setCfg];
+}
+
+async function pullFromCloud(cfg) {
+  const res = await fetch(`${cfg.url}?token=${encodeURIComponent(cfg.token)}`, { method: "GET" });
+  const text = await res.text();
+  let json;
+  try { json = JSON.parse(text); } catch (e) { throw new Error("Resposta inválida do servidor."); }
+  if (json && json.error) throw new Error(json.error);
+  return json;
+}
+
+async function pushToCloud(cfg, data) {
+  const res = await fetch(`${cfg.url}?token=${encodeURIComponent(cfg.token)}`, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(data),
+  });
+  const text = await res.text();
+  let json;
+  try { json = JSON.parse(text); } catch (e) { throw new Error("Resposta inválida do servidor."); }
+  if (json && json.error) throw new Error(json.error);
+  return json;
+}
+
+const fmtKg = v => (Math.round((v || 0) * 1000) / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 3 });
+const fmtMoeda = v => "R$ " + (v || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtNum = v => Math.round(v || 0).toLocaleString("pt-BR");
+
+/* ============================== PURE LOGIC — PRODUÇÃO ============================== */
+
+function registrarCompra(prev, insumoId, kg, precoKg) {
+  if (!kg || kg <= 0 || precoKg < 0) return { error: "Informe uma quantidade válida." };
+  const ins = prev.insumosStock[insumoId];
+  if (!ins) return { error: "Insumo não encontrado." };
+  const novoStock = ins.stockKg + kg;
+  const novoAvg = ins.stockKg > 0 ? (ins.stockKg * ins.avgPrice + kg * precoKg) / novoStock : precoKg;
+  const log = { id: Date.now(), insumo: insumoId, kg, precoKg, valorTotal: kg * precoKg, data: new Date().toLocaleDateString("pt-BR") };
+  return {
+    ok: true,
+    state: {
+      ...prev,
+      insumosStock: { ...prev.insumosStock, [insumoId]: { stockKg: novoStock, avgPrice: novoAvg } },
+      comprasLog: [log, ...prev.comprasLog].slice(0, 200),
+    },
+  };
+}
+
+function recalcInsumoFromLogs(prev, insumoId) {
+  // Recalcula stockKg e avgPrice de um insumo do zero, replaying compras + ajustes − misturas.
+  const compras = prev.comprasLog.filter(c => c.insumo === insumoId);
+  const totalKgComprado = compras.reduce((s, c) => s + (c.kg || 0), 0);
+  const totalValor = compras.reduce((s, c) => s + (c.valorTotal || 0), 0);
+  const avgPrice = totalKgComprado > 0 ? totalValor / totalKgComprado : 0;
+  const totalAjustes = (prev.ajustesLog || []).filter(a => a.insumo === insumoId).reduce((s, a) => s + (a.delta || 0), 0);
+  const totalFracao = (prev.misturaLog || []).reduce((s, m) => s + (m.fracao || 0), 0);
+  const consumido = (prev.formula[insumoId] || 0) * totalFracao;
+  const stockKg = Math.max(0, totalKgComprado + totalAjustes - consumido);
+  return { stockKg, avgPrice };
+}
+
+function editarCompra(prev, compraId, novoKg, novoPreco) {
+  if (!novoKg || novoKg <= 0) return { error: "Quantidade deve ser maior que zero." };
+  if (novoPreco < 0) return { error: "Preço não pode ser negativo." };
+  const compra = prev.comprasLog.find(c => c.id === compraId);
+  if (!compra) return { error: "Compra não encontrada." };
+  const novasCompras = prev.comprasLog.map(c =>
+    c.id === compraId ? { ...c, kg: Number(novoKg), precoKg: Number(novoPreco), valorTotal: Number(novoKg) * Number(novoPreco) } : c
+  );
+  const prevAtualizado = { ...prev, comprasLog: novasCompras };
+  const { stockKg, avgPrice } = recalcInsumoFromLogs(prevAtualizado, compra.insumo);
+  return {
+    ok: true,
+    state: {
+      ...prevAtualizado,
+      insumosStock: { ...prevAtualizado.insumosStock, [compra.insumo]: { stockKg, avgPrice } },
+    },
+  };
+}
+
+function registrarAjuste(prev, insumoId, kg, motivo) {
+  const delta = Number(kg);
+  if (!delta || delta === 0) return { error: "Informe um valor diferente de zero." };
+  const ins = prev.insumosStock[insumoId];
+  if (!ins) return { error: "Insumo não encontrado." };
+  const novoStock = ins.stockKg + delta;
+  if (novoStock < -1e-9) return { error: `Ajuste inválido: o saldo ficaria negativo (${fmtKg(ins.stockKg)} kg disponível).` };
+  // Para ajuste negativo: sem custo adicional, avg price não muda.
+  // Para ajuste positivo: entra ao preço médio atual (sem novo custo financeiro, é só correção de quantidade).
+  const log = {
+    id: Date.now(), insumo: insumoId, delta,
+    saldoAntes: ins.stockKg, saldoDepois: Math.max(0, novoStock),
+    motivo: motivo || "Sem descrição", data: new Date().toLocaleDateString("pt-BR"),
+  };
+  return {
+    ok: true,
+    state: {
+      ...prev,
+      insumosStock: { ...prev.insumosStock, [insumoId]: { ...ins, stockKg: Math.max(0, novoStock) } },
+      ajustesLog: [log, ...prev.ajustesLog].slice(0, 200),
+    },
+  };
+}
+
+function confirmarMistura(prev, fracao) {
+  if (!fracao || fracao <= 0) return { error: "Informe uma fração de batida maior que zero." };
+  if (fracao > 1) return { error: "A batida não pode passar de 1x a fórmula completa." };
+  const insumos = prev.catalog.insumos;
+  const consumo = {};
+  for (const i of insumos) consumo[i.id] = (prev.formula[i.id] || 0) * fracao;
+  for (const i of insumos) {
+    if (prev.insumosStock[i.id].stockKg < consumo[i.id] - 1e-9) {
+      return { error: `Estoque insuficiente de ${i.label} (disponível ${fmtKg(prev.insumosStock[i.id].stockKg)} kg, necessário ${fmtKg(consumo[i.id])} kg).` };
+    }
+  }
+  let novosInsumos = { ...prev.insumosStock };
+  let custoBatida = 0, kgBatida = 0;
+  for (const i of insumos) {
+    const c = consumo[i.id];
+    kgBatida += c;
+    custoBatida += c * prev.insumosStock[i.id].avgPrice;
+    novosInsumos[i.id] = { ...novosInsumos[i.id], stockKg: novosInsumos[i.id].stockKg - c };
+  }
+  const old = prev.massaPool;
+  const novoKg = old.kg + kgBatida;
+  const novoAvgCost = novoKg > 0 ? (old.kg * old.avgCost + custoBatida) / novoKg : 0;
+  const log = { id: Date.now(), fracao, kg: kgBatida, custo: custoBatida, data: new Date().toLocaleDateString("pt-BR") };
+  return {
+    ok: true,
+    state: {
+      ...prev,
+      insumosStock: novosInsumos,
+      massaPool: { kg: novoKg, avgCost: novoAvgCost },
+      misturaLog: [log, ...prev.misturaLog].slice(0, 200),
+    },
+  };
+}
+
+function adicionarLote(prev, tiras, ciclos) {
+  const pecaList = getPecaList(prev.catalog);
+  const totalTiras = Object.values(tiras).reduce((a, b) => a + b, 0);
+  if (totalTiras === 0) return { error: "Selecione ao menos uma tira no forno." };
+  if (!ciclos || ciclos <= 0) return { error: "Informe quantos ciclos essa combinação rodou." };
+
+  const pecasProduzidas = {};
+  let kgConsumido = 0;
+  for (const p of pecaList) {
+    const qty = (tiras[p.id] || 0) * p.pecasPorTira * ciclos;
+    pecasProduzidas[p.id] = qty;
+    kgConsumido += qty * p.pesoKg;
+  }
+  if (prev.massaPool.kg < kgConsumido - 1e-9) {
+    return { error: `Massa insuficiente: faltam ${fmtKg(kgConsumido - prev.massaPool.kg)} kg. Confirme uma mistura antes de produzir.` };
+  }
+  const avgCost = prev.massaPool.avgCost;
+  const custoProducao = kgConsumido * avgCost;
+  let novoPecaStock = { ...prev.pecaStock };
+  for (const p of pecaList) {
+    const qty = pecasProduzidas[p.id];
+    if (qty <= 0) continue;
+    const custoUnit = p.pesoKg * avgCost;
+    const old = novoPecaStock[p.id];
+    const novaQty = old.qty + qty;
+    const novoAvg = novaQty > 0 ? (old.qty * old.avgCost + qty * custoUnit) / novaQty : 0;
+    novoPecaStock[p.id] = { qty: novaQty, avgCost: novoAvg };
+  }
+  const novoMassaPool = { kg: prev.massaPool.kg - kgConsumido, avgCost: prev.massaPool.avgCost };
+  const lote = { id: Date.now(), tiras: { ...tiras }, ciclos, pecasProduzidas, kgConsumido, custoProducao };
+  return {
+    ok: true,
+    state: { ...prev, pecaStock: novoPecaStock, massaPool: novoMassaPool, lotesHoje: [...prev.lotesHoje, lote] },
+  };
+}
+
+function registrarPerdas(prev, perdasInput) {
+  const pecaList = getPecaList(prev.catalog);
+  let novoPecaStock = { ...prev.pecaStock };
+  let novoAccum = { ...prev.perdasHojeAccum };
+  let avisos = [];
+  let algumaCoisa = false;
+  for (const p of pecaList) {
+    const v = Math.round(perdasInput[p.id] || 0);
+    if (v <= 0) continue;
+    algumaCoisa = true;
+    const old = novoPecaStock[p.id];
+    if (v > old.qty) avisos.push(`${p.label}: aplicado ${old.qty} (estoque era menor que o informado)`);
+    const aplicado = Math.min(v, old.qty);
+    novoPecaStock[p.id] = { ...old, qty: old.qty - aplicado };
+    novoAccum[p.id] = (novoAccum[p.id] || 0) + aplicado;
+  }
+  if (!algumaCoisa) return { error: "Informe ao menos uma perda maior que zero." };
+  return {
+    ok: true,
+    avisos,
+    state: { ...prev, pecaStock: novoPecaStock, perdasHojeAccum: novoAccum },
+  };
+}
+
+function montar(prev, modeloId, torsoTipo, qty) {
+  if (!qty || qty <= 0) return { error: "Informe uma quantidade maior que zero." };
+  const model = prev.catalog.modelos.find(m => m.id === modeloId);
+  if (!model) return { error: "Modelo não encontrado." };
+  const torsoId = model.torsoMode === "choice" ? torsoTipo : (model.torsoMode === "m" ? "torso_m" : "torso_f");
+  const needed = { braco_dir: qty, braco_esq: qty, perna_dir: qty, perna_esq: qty };
+  needed[torsoId] = (needed[torsoId] || 0) + qty;
+  needed[modeloId] = (needed[modeloId] || 0) + qty;
+
+  for (const pid in needed) {
+    const stock = prev.pecaStock[pid];
+    if (!stock || stock.qty < needed[pid] - 1e-9) {
+      return { error: `Estoque insuficiente de ${getLabel(prev.catalog, pid)}: disponível ${fmtNum(stock ? stock.qty : 0)}, necessário ${fmtNum(needed[pid])}.` };
+    }
+  }
+  let novoPecaStock = { ...prev.pecaStock };
+  let custoTotal = 0;
+  for (const pid in needed) {
+    const old = novoPecaStock[pid];
+    custoTotal += needed[pid] * old.avgCost;
+    novoPecaStock[pid] = { ...old, qty: old.qty - needed[pid] };
+  }
+  const oldB = prev.bonecasStock[modeloId];
+  const novaQty = oldB.qty + qty;
+  const novoAvg = novaQty > 0 ? (oldB.qty * oldB.avgCost + custoTotal) / novaQty : 0;
+  const novoBonecasStock = { ...prev.bonecasStock, [modeloId]: { qty: novaQty, avgCost: novoAvg } };
+  const log = { id: Date.now(), modelo: modeloId, torso: torsoId, qty, custoTotal };
+  return {
+    ok: true,
+    state: { ...prev, pecaStock: novoPecaStock, bonecasStock: novoBonecasStock, montagemHoje: [...prev.montagemHoje, log] },
+  };
+}
+
+function salvarDia(prev, year, month, day, observacao) {
+  const chave = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  const produced = {};
+  let kgConsumido = 0, custoProducao = 0;
+  for (const lote of prev.lotesHoje) {
+    kgConsumido += lote.kgConsumido;
+    custoProducao += lote.custoProducao;
+    for (const pid in lote.pecasProduzidas) produced[pid] = (produced[pid] || 0) + lote.pecasProduzidas[pid];
+  }
+  const bonecasMontadas = {};
+  let custoMontagem = 0;
+  for (const m of prev.montagemHoje) {
+    bonecasMontadas[m.modelo] = (bonecasMontadas[m.modelo] || 0) + m.qty;
+    custoMontagem += m.custoTotal;
+  }
+  const registro = {
+    lotes: prev.lotesHoje,
+    perdas: prev.perdasHojeAccum,
+    produced, kgConsumido, custoProducao,
+    montagens: prev.montagemHoje,
+    bonecasMontadas, custoMontagem,
+    pecaStockFinal: prev.pecaStock,
+    bonecasStockFinal: prev.bonecasStock,
+    observacao: observacao || "",
+  };
+  return {
+    ...prev,
+    historico: { ...prev.historico, [chave]: registro },
+    lotesHoje: [],
+    perdasHojeAccum: Object.fromEntries(getPecaList(prev.catalog).map(p => [p.id, 0])),
+    montagemHoje: [],
+  };
+}
+
+/* ============================== PURE LOGIC — CATÁLOGO ============================== */
+
+function addInsumo(prev, label) {
+  if (!label || !label.trim()) return { error: "Informe um nome." };
+  const id = slugify(label, prev.catalog.insumos.map(i => i.id));
+  return {
+    ok: true,
+    state: {
+      ...prev,
+      catalog: { ...prev.catalog, insumos: [...prev.catalog.insumos, { id, label: label.trim() }] },
+      formula: { ...prev.formula, [id]: 0 },
+      insumosStock: { ...prev.insumosStock, [id]: { stockKg: 0, avgPrice: 0 } },
+    },
+  };
+}
+
+function editInsumoLabel(prev, id, label) {
+  return { ...prev, catalog: { ...prev.catalog, insumos: prev.catalog.insumos.map(i => i.id === id ? { ...i, label } : i) } };
+}
+
+function removeInsumoCheck(prev, id) {
+  const ins = prev.insumosStock[id];
+  if (ins && ins.stockKg > 0.0001) return { needsConfirm: true, message: `Esse insumo tem ${fmtKg(ins.stockKg)} kg em estoque. Remover mesmo assim? Os números ficam guardados, só some da lista de uso.` };
+  return { needsConfirm: false };
+}
+
+function removeInsumoForce(prev, id) {
+  return { ...prev, catalog: { ...prev.catalog, insumos: prev.catalog.insumos.filter(i => i.id !== id) } };
+}
+
+function editCorpoField(prev, id, field, value) {
+  const novo = prev.catalog.corpo.map(c => {
+    if (c.id !== id) return c;
+    if (field === "label") return { ...c, label: value };
+    if (field === "pecasPorTira") return { ...c, pecasPorTira: Math.max(1, Math.round(Number(value) || 1)) };
+    if (field === "pesoG") return { ...c, pesoKg: Math.max(0, Number(value) || 0) / 1000 };
+    return c;
+  });
+  return { ...prev, catalog: { ...prev.catalog, corpo: novo } };
+}
+
+function addCorpo(prev, opts) {
+  const label = opts.label, pecasPorTira = opts.pecasPorTira, pesoG = opts.pesoG;
+  if (!label || !label.trim()) return { error: "Informe um nome para a peça." };
+  const existingIds = [...prev.catalog.corpo, ...prev.catalog.modelos].map(p => p.id);
+  const id = slugify(label, existingIds);
+  const nova = {
+    id, label: label.trim(),
+    pecasPorTira: Math.max(1, Math.round(Number(pecasPorTira) || 6)),
+    pesoKg: Math.max(0, Number(pesoG) || 0) / 1000,
+  };
+  return {
+    ok: true,
+    state: {
+      ...prev,
+      catalog: { ...prev.catalog, corpo: [...prev.catalog.corpo, nova] },
+      pecaStock: { ...prev.pecaStock, [id]: { qty: 0, avgCost: 0 } },
+      perdasHojeAccum: { ...prev.perdasHojeAccum, [id]: 0 },
+      tiras: { ...prev.tiras, [id]: 0 },
+    },
+  };
+}
+
+function removeCorpoCheck(prev, id) {
+  const ps = prev.pecaStock[id];
+  if (ps && ps.qty > 0) {
+    return { needsConfirm: true, message: `Essa peça tem ${Math.round(ps.qty)} unidade(s) em estoque. Remover mesmo assim? Os números ficam guardados, só some da lista de uso.` };
+  }
+  return { needsConfirm: false };
+}
+
+function removeCorpoForce(prev, id) {
+  const novoTiras = { ...prev.tiras };
+  delete novoTiras[id];
+  return { ...prev, catalog: { ...prev.catalog, corpo: prev.catalog.corpo.filter(c => c.id !== id) }, tiras: novoTiras };
+}
+
+function addModelo(prev, opts) {
+  const label = opts.label, pecasPorTira = opts.pecasPorTira, pesoG = opts.pesoG, torsoMode = opts.torsoMode, note = opts.note;
+  if (!label || !label.trim()) return { error: "Informe um nome para o modelo." };
+  const existingIds = prev.catalog.modelos.map(m => m.id).concat(prev.catalog.corpo.map(c => c.id));
+  const id = slugify(label, existingIds);
+  const novo = {
+    id, label: label.trim(),
+    pecasPorTira: Math.max(1, Math.round(Number(pecasPorTira) || 6)),
+    pesoKg: Math.max(0, Number(pesoG) || 0) / 1000,
+    torsoMode: torsoMode || "choice",
+    note: note || "",
+  };
+  return {
+    ok: true,
+    state: {
+      ...prev,
+      catalog: { ...prev.catalog, modelos: [...prev.catalog.modelos, novo] },
+      pecaStock: { ...prev.pecaStock, [id]: { qty: 0, avgCost: 0 } },
+      bonecasStock: { ...prev.bonecasStock, [id]: { qty: 0, avgCost: 0 } },
+      perdasHojeAccum: { ...prev.perdasHojeAccum, [id]: 0 },
+    },
+  };
+}
+
+function editModelo(prev, id, field, value) {
+  const novo = prev.catalog.modelos.map(m => {
+    if (m.id !== id) return m;
+    if (field === "label" || field === "note" || field === "torsoMode") return { ...m, [field]: value };
+    if (field === "pecasPorTira") return { ...m, pecasPorTira: Math.max(1, Math.round(Number(value) || 6)) };
+    if (field === "pesoG") return { ...m, pesoKg: Math.max(0, Number(value) || 0) / 1000 };
+    return m;
+  });
+  return { ...prev, catalog: { ...prev.catalog, modelos: novo } };
+}
+
+function removeModeloCheck(prev, id) {
+  const ps = prev.pecaStock[id], bs = prev.bonecasStock[id];
+  if ((ps && ps.qty > 0) || (bs && bs.qty > 0)) {
+    return { needsConfirm: true, message: `Esse modelo tem ${ps ? ps.qty : 0} cabeça(s) e ${bs ? bs.qty : 0} boneca(s) pronta(s) em estoque. Remover mesmo assim? Os números ficam guardados, só some da lista de uso.` };
+  }
+  return { needsConfirm: false };
+}
+
+function removeModeloForce(prev, id) {
+  const novoTiras = { ...prev.tiras };
+  delete novoTiras[id];
+  return { ...prev, catalog: { ...prev.catalog, modelos: prev.catalog.modelos.filter(m => m.id !== id) }, tiras: novoTiras };
+}
+
+/* ============================== UI BITS ============================== */
+
+function Banner({ msg, onClose }) {
+  if (!msg) return null;
+  return (
+    <div className={`banner ${msg.type}`}>
+      <span>{msg.text}</span>
+      <button onClick={onClose}>✕</button>
+    </div>
+  );
+}
+
+function MetaCard({ label, value, small }) {
+  return (
+    <div className="meta-card">
+      <div className="l">{label}</div>
+      <div className={"v" + (small ? " small" : "")}>{value}</div>
+    </div>
+  );
+}
+
+function EditableText({ value, onCommit, placeholder }) {
+  const [v, setV] = useState(value);
+  useEffect(() => { setV(value); }, [value]);
+  return <input type="text" value={v} placeholder={placeholder} onChange={e => setV(e.target.value)} onBlur={() => { if (v !== value) onCommit(v); }} />;
+}
+
+function EditableNum({ value, onCommit, width }) {
+  const [v, setV] = useState(value);
+  useEffect(() => { setV(value); }, [value]);
+  return <input type="number" className="num" style={width ? { width } : undefined} value={v} onChange={e => setV(e.target.value)} onBlur={() => { if (Number(v) !== Number(value)) onCommit(v); }} />;
+}
+
+/* ============================== TABS ============================== */
+
+function ResumoTab(props) {
+  const data = props.data, onReset = props.onReset, cfg = props.cfg, cfgDraft = props.cfgDraft,
+    setCfgDraft = props.setCfgDraft, onSaveCfg = props.onSaveCfg, syncStatus = props.syncStatus,
+    onPull = props.onPull, onPush = props.onPush;
+
+  const insumosValor = data.catalog.insumos.reduce((a, i) => a + data.insumosStock[i.id].stockKg * data.insumosStock[i.id].avgPrice, 0);
+  const pecaList = getPecaList(data.catalog);
+  const pecasQty = pecaList.reduce((a, p) => a + (data.pecaStock[p.id] ? data.pecaStock[p.id].qty : 0), 0);
+  const pecasValor = pecaList.reduce((a, p) => a + (data.pecaStock[p.id] ? data.pecaStock[p.id].qty * data.pecaStock[p.id].avgCost : 0), 0);
+  const bonecasQty = data.catalog.modelos.reduce((a, m) => a + data.bonecasStock[m.id].qty, 0);
+  const bonecasValor = data.catalog.modelos.reduce((a, m) => a + data.bonecasStock[m.id].qty * data.bonecasStock[m.id].avgCost, 0);
+
+  const statusMap = {
+    idle: { cls: "", text: cfg.url ? "Configurado" : "Não configurado" },
+    syncing: { cls: "ok", text: "Sincronizando..." },
+    ok: { cls: "ok", text: syncStatus.lastSync ? `Sincronizado às ${syncStatus.lastSync}` : "Sincronizado" },
+    error: { cls: "bad", text: syncStatus.errorMsg || "Erro ao sincronizar" },
+  };
+  const statusBadge = statusMap[syncStatus.state || "idle"];
+
+  return (
+    <div className="content">
+      <div className="helptext">Visão geral de todos os estoques e valores acumulados do controle.</div>
+
+      <div className="section-label">Sincronização entre dispositivos <span className={`badge ${statusBadge.cls}`} style={{ marginLeft: 8, textTransform: "none" }}>{statusBadge.text}</span></div>
+      <div className="card card-accent">
+        <div className="row-sub" style={{ marginBottom: 10 }}>
+          Cole aqui a URL e o token do conector (Google Apps Script) para que os dados fiquem salvos na nuvem e acessíveis de qualquer computador.
+        </div>
+        <div className="formgrid" style={{ marginBottom: 10 }}>
+          <input placeholder="URL do Web App" value={cfgDraft.url} onChange={e => setCfgDraft(d => ({ ...d, url: e.target.value }))} style={{ flex: "2 1 220px" }} />
+          <input placeholder="Token" value={cfgDraft.token} onChange={e => setCfgDraft(d => ({ ...d, token: e.target.value }))} style={{ flex: "1 1 100px" }} />
+          <button className="btn btn-secondary" onClick={() => onSaveCfg(cfgDraft)}>Salvar</button>
+        </div>
+        <div className="formgrid">
+          <button className="btn btn-primary" disabled={!cfg.url} onClick={onPull}>Baixar da nuvem</button>
+          <button className="btn btn-secondary" disabled={!cfg.url} onClick={onPush}>Enviar para a nuvem</button>
+        </div>
+      </div>
+
+      <div className="section-label">Matéria-prima</div>
+      <div className="meta-grid cols-2">
+        <MetaCard label="Valor em estoque bruto" value={fmtMoeda(insumosValor)} />
+        <MetaCard label="Massa pronta (mistura)" value={fmtKg(data.massaPool.kg) + " kg"} />
+      </div>
+
+      <div className="section-label">Peças em estoque</div>
+      <div className="meta-grid cols-2">
+        <MetaCard label="Unidades" value={fmtNum(pecasQty)} />
+        <MetaCard label="Valor total" value={fmtMoeda(pecasValor)} />
+      </div>
+
+      <div className="section-label">Bonecas prontas</div>
+      <div className="meta-grid cols-2">
+        <MetaCard label="Unidades" value={fmtNum(bonecasQty)} />
+        <MetaCard label="Valor total" value={fmtMoeda(bonecasValor)} />
+      </div>
+
+      <div className="card flat" style={{ marginTop: 18 }}>
+        {data.catalog.modelos.map(m => (
+          <div className="row" key={m.id}>
+            <div className="row-title">{m.label}</div>
+            <div style={{ textAlign: "right" }}>
+              <div className="row-title">{fmtNum(data.bonecasStock[m.id].qty)} un.</div>
+              <div className="row-sub">custo médio {fmtMoeda(data.bonecasStock[m.id].avgCost)}/un.</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="section-label">Manutenção</div>
+      <div className="card">
+        <button className="btn btn-danger" onClick={onReset}>Resetar todos os dados</button>
+        <div className="row-sub" style={{ marginTop: 8 }}>Apaga tudo (estoques, histórico, catálogo) e volta ao zero neste dispositivo.</div>
+      </div>
+
+      <div className="footer-note">Dados salvos automaticamente neste dispositivo{cfg.url ? " e sincronizados com a nuvem" : " (armazenamento local do navegador)"}.</div>
+    </div>
+  );
+}
+
+function CatalogoTab({ data, setData, setMsg }) {
+  const [novoInsumo, setNovoInsumo] = useState("");
+  const [novoModelo, setNovoModelo] = useState({ label: "", pecasPorTira: 6, pesoG: 180, torsoMode: "choice", note: "" });
+  const [novaCorpo, setNovaCorpo] = useState({ label: "", pecasPorTira: 6, pesoG: 100 });
+
+  const handleAddInsumo = () => {
+    const r = addInsumo(data, novoInsumo);
+    if (r.error) { setMsg({ type: "error", text: r.error }); return; }
+    setData(r.state);
+    setNovoInsumo("");
+    setMsg({ type: "success", text: "Insumo adicionado." });
+  };
+
+  const handleRemoveInsumo = (id) => {
+    const check = removeInsumoCheck(data, id);
+    if (check.needsConfirm && !window.confirm(check.message)) return;
+    setData(prev => removeInsumoForce(prev, id));
+    setMsg({ type: "success", text: "Insumo removido da lista." });
+  };
+
+  const handleAddModelo = () => {
+    const r = addModelo(data, novoModelo);
+    if (r.error) { setMsg({ type: "error", text: r.error }); return; }
+    setData(r.state);
+    setNovoModelo({ label: "", pecasPorTira: 6, pesoG: 180, torsoMode: "choice", note: "" });
+    setMsg({ type: "success", text: "Modelo adicionado." });
+  };
+
+  const handleRemoveModelo = (id) => {
+    const check = removeModeloCheck(data, id);
+    if (check.needsConfirm && !window.confirm(check.message)) return;
+    setData(prev => removeModeloForce(prev, id));
+    setMsg({ type: "success", text: "Modelo removido da lista." });
+  };
+
+  const handleAddCorpo = () => {
+    const r = addCorpo(data, novaCorpo);
+    if (r.error) { setMsg({ type: "error", text: r.error }); return; }
+    setData(r.state);
+    setNovaCorpo({ label: "", pecasPorTira: 6, pesoG: 100 });
+    setMsg({ type: "success", text: "Peça do corpo adicionada." });
+  };
+
+  const handleRemoveCorpo = (id) => {
+    const check = removeCorpoCheck(data, id);
+    if (check.needsConfirm && !window.confirm(check.message)) return;
+    setData(prev => removeCorpoForce(prev, id));
+    setMsg({ type: "success", text: "Peça removida da lista." });
+  };
+
+  return (
+    <div className="content">
+      <div className="helptext">
+        Aqui você ajusta nomes, pesos e quantidades por tira de tudo, além de adicionar ou remover peças do corpo,
+        modelos de boneca e insumos de matéria-prima livremente. Novas peças do corpo aparecem no Forno e no Estoque
+        — a montagem automática continua usando as peças originais (braços, pernas, torso e cabeça).
+      </div>
+
+      <div className="section-label">Insumos de matéria-prima</div>
+      <div className="card flat">
+        {data.catalog.insumos.map(i => (
+          <div className="row editable-row" key={i.id}>
+            <div className="grow"><EditableText value={i.label} onCommit={v => setData(prev => editInsumoLabel(prev, i.id, v))} /></div>
+            <button className="btn btn-secondary btn-sm" onClick={() => handleRemoveInsumo(i.id)}>Remover</button>
+          </div>
+        ))}
+      </div>
+      <div className="card card-accent">
+        <div className="formgrid">
+          <input className="grow" placeholder="Nome do novo insumo" value={novoInsumo} onChange={e => setNovoInsumo(e.target.value)} />
+          <button className="btn btn-primary" onClick={handleAddInsumo}>Adicionar insumo</button>
+        </div>
+      </div>
+
+      <div className="section-label">Peças do corpo</div>
+      <div className="card flat">
+        {data.catalog.corpo.map(c => (
+          <div className="row editable-row" key={c.id}>
+            <div className="grow"><EditableText value={c.label} onCommit={v => setData(prev => editCorpoField(prev, c.id, "label", v))} /></div>
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <EditableNum value={c.pecasPorTira} onCommit={v => setData(prev => editCorpoField(prev, c.id, "pecasPorTira", v))} />
+              <span className="row-sub">/tira</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <EditableNum value={Math.round(c.pesoKg * 1000)} onCommit={v => setData(prev => editCorpoField(prev, c.id, "pesoG", v))} />
+              <span className="row-sub">g</span>
+            </div>
+            <button className="btn btn-secondary btn-sm" onClick={() => handleRemoveCorpo(c.id)}>Remover</button>
+          </div>
+        ))}
+      </div>
+      <div className="card card-accent">
+        <div className="section-label" style={{ marginTop: 0 }}>Adicionar nova peça do corpo</div>
+        <div className="formgrid" style={{ marginBottom: 10 }}>
+          <input className="grow" placeholder="Nome da peça (ex: Mão aberta direita)" value={novaCorpo.label} onChange={e => setNovaCorpo(p => ({ ...p, label: e.target.value }))} />
+        </div>
+        <div className="formgrid">
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <input type="number" style={{ width: 64 }} value={novaCorpo.pecasPorTira} onChange={e => setNovaCorpo(p => ({ ...p, pecasPorTira: e.target.value }))} />
+            <span className="row-sub">peças/tira</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <input type="number" style={{ width: 64 }} value={novaCorpo.pesoG} onChange={e => setNovaCorpo(p => ({ ...p, pesoG: e.target.value }))} />
+            <span className="row-sub">g/peça</span>
+          </div>
+          <button className="btn btn-primary" onClick={handleAddCorpo}>Adicionar peça</button>
+        </div>
+      </div>
+
+      <div className="section-label">Modelos de boneca (cabeças)</div>
+      <div className="card flat">
+        {data.catalog.modelos.map(m => (
+          <div key={m.id} style={{ padding: "12px 14px", borderBottom: "1px solid var(--border)" }}>
+            <div className="formgrid editable-row" style={{ marginBottom: 8 }}>
+              <div className="grow"><EditableText value={m.label} onCommit={v => setData(prev => editModelo(prev, m.id, "label", v))} /></div>
+              <button className="btn btn-secondary btn-sm" onClick={() => handleRemoveModelo(m.id)}>Remover</button>
+            </div>
+            <div className="formgrid">
+              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <EditableNum value={m.pecasPorTira} onCommit={v => setData(prev => editModelo(prev, m.id, "pecasPorTira", v))} />
+                <span className="row-sub">peças/tira</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <EditableNum value={Math.round(m.pesoKg * 1000)} onCommit={v => setData(prev => editModelo(prev, m.id, "pesoG", v))} />
+                <span className="row-sub">g/peça</span>
+              </div>
+              <select value={m.torsoMode} onChange={e => setData(prev => editModelo(prev, m.id, "torsoMode", e.target.value))}>
+                <option value="choice">Escolhe na montagem</option>
+                <option value="f">Sempre menina</option>
+                <option value="m">Sempre menino</option>
+              </select>
+            </div>
+            <div style={{ marginTop: 8 }}>
+              <EditableText value={m.note} placeholder="observação (opcional)" onCommit={v => setData(prev => editModelo(prev, m.id, "note", v))} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="card card-accent">
+        <div className="section-label" style={{ marginTop: 0 }}>Adicionar novo modelo</div>
+        <div className="formgrid" style={{ marginBottom: 10 }}>
+          <input className="grow" placeholder="Nome do modelo" value={novoModelo.label} onChange={e => setNovoModelo(p => ({ ...p, label: e.target.value }))} />
+        </div>
+        <div className="formgrid" style={{ marginBottom: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <input type="number" style={{ width: 64 }} value={novoModelo.pecasPorTira} onChange={e => setNovoModelo(p => ({ ...p, pecasPorTira: e.target.value }))} />
+            <span className="row-sub">peças/tira</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <input type="number" style={{ width: 64 }} value={novoModelo.pesoG} onChange={e => setNovoModelo(p => ({ ...p, pesoG: e.target.value }))} />
+            <span className="row-sub">g/peça</span>
+          </div>
+          <select value={novoModelo.torsoMode} onChange={e => setNovoModelo(p => ({ ...p, torsoMode: e.target.value }))}>
+            <option value="choice">Escolhe na montagem</option>
+            <option value="f">Sempre menina</option>
+            <option value="m">Sempre menino</option>
+          </select>
+        </div>
+        <div className="formgrid" style={{ marginBottom: 10 }}>
+          <input className="grow" placeholder="observação (opcional)" value={novoModelo.note} onChange={e => setNovoModelo(p => ({ ...p, note: e.target.value }))} />
+        </div>
+        <button className="btn btn-primary" onClick={handleAddModelo}>Adicionar modelo</button>
+      </div>
+    </div>
+  );
+}
+
+function MateriaPrimaTab({ data, setData, setMsg }) {
+  const [editFormula, setEditFormula] = useState(false);
+  const [modo, setModo] = useState("compra"); // "compra" | "ajuste"
+
+  // compra
+  const [compraInsumo, setCompraInsumo] = useState(data.catalog.insumos[0] ? data.catalog.insumos[0].id : "");
+  const [compraKg, setCompraKg] = useState("");
+  const [compraPreco, setCompraPreco] = useState("");
+
+  // ajuste
+  const [ajInsumo, setAjInsumo] = useState(data.catalog.insumos[0] ? data.catalog.insumos[0].id : "");
+  const [ajKg, setAjKg] = useState("");
+  const [ajMotivo, setAjMotivo] = useState("");
+
+  const insumos = data.catalog.insumos;
+  const totalFormula = insumos.reduce((a, i) => a + (data.formula[i.id] || 0), 0);
+
+  const batidasPossiveis = useMemo(() => {
+    let min = Infinity;
+    for (const i of insumos) {
+      const f = data.formula[i.id] || 0;
+      if (f <= 0) continue;
+      const ratio = data.insumosStock[i.id].stockKg / f;
+      if (ratio < min) min = ratio;
+    }
+    return Number.isFinite(min) ? min : 0;
+  }, [data.formula, data.insumosStock, insumos]);
+
+  const setFormulaVal = (id, v) => setData(prev => ({ ...prev, formula: { ...prev.formula, [id]: Math.max(0, Number(v) || 0) } }));
+  const restaurarFormula = () => setData(prev => ({ ...prev, formula: { ...DEFAULT_FORMULA } }));
+
+  const handleCompra = () => {
+    const kg = Number(compraKg), preco = Number(compraPreco);
+    const result = registrarCompra(data, compraInsumo, kg, preco);
+    if (result.error) { setMsg({ type: "error", text: result.error }); return; }
+    setData(result.state);
+    setMsg({ type: "success", text: `Compra registrada: ${fmtKg(kg)} kg de ${getLabel(data.catalog, compraInsumo)}.` });
+    setCompraKg(""); setCompraPreco("");
+  };
+
+  const handleAjuste = () => {
+    const result = registrarAjuste(data, ajInsumo, ajKg, ajMotivo);
+    if (result.error) { setMsg({ type: "error", text: result.error }); return; }
+    const delta = Number(ajKg);
+    const sinal = delta > 0 ? "+" : "";
+    setData(result.state);
+    setMsg({ type: "success", text: `Ajuste aplicado: ${sinal}${fmtKg(delta)} kg em ${getLabel(data.catalog, ajInsumo)}.` });
+    setAjKg(""); setAjMotivo("");
+  };
+
+  // log unificado (compras + ajustes), ordenado por id (mais recente primeiro)
+  const logUnificado = [
+    ...data.comprasLog.map(c => ({ ...c, tipo: "compra" })),
+    ...(data.ajustesLog || []).map(a => ({ ...a, tipo: "ajuste" })),
+  ].sort((a, b) => b.id - a.id).slice(0, 12);
+
+  const [editandoCompra, setEditandoCompra] = useState(null); // id da compra sendo editada
+  const [editKg, setEditKg] = useState("");
+  const [editPreco, setEditPreco] = useState("");
+
+  const abrirEdicaoCompra = (entry) => {
+    setEditandoCompra(entry.id);
+    setEditKg(String(entry.kg));
+    setEditPreco(String(entry.precoKg));
+  };
+
+  const confirmarEdicaoCompra = (compraId) => {
+    const result = editarCompra(data, compraId, Number(editKg), Number(editPreco));
+    if (result.error) { setMsg({ type: "error", text: result.error }); return; }
+    setData(result.state);
+    setMsg({ type: "success", text: "Compra atualizada. Estoque recalculado." });
+    setEditandoCompra(null);
+  };
+
+  const sTab = active => ({
+    padding: "8px 16px", fontSize: 13, fontWeight: active ? 600 : 400,
+    cursor: "pointer", border: "none", background: "transparent",
+    color: active ? "var(--color-text-primary)" : "var(--color-text-secondary)",
+    borderBottom: `2px solid ${active ? "var(--amber, #BA7517)" : "transparent"}`,
+    marginBottom: -1,
+  });
+
+  return (
+    <div className="content">
+      <div className="helptext">
+        Registre as compras de cada insumo (kg + preço por kg) e use o Reajuste para corrigir quantidades
+        sem afetar o custo médio. Para adicionar ou remover insumos, use a aba Catálogo.
+      </div>
+
+      <div className="meta-grid cols-2">
+        <MetaCard label="Batidas possíveis (estoque atual)" value={batidasPossiveis.toLocaleString("pt-BR", { maximumFractionDigits: 2 })} />
+        <MetaCard label="Peso da fórmula completa" value={fmtKg(totalFormula) + " kg"} />
+      </div>
+
+      <div className="section-label">
+        Fórmula da batida completa
+        <button className="btn btn-secondary btn-sm" style={{ marginLeft: 10, textTransform: "none", letterSpacing: 0 }} onClick={() => setEditFormula(e => !e)}>
+          {editFormula ? "Concluir edição" : "Editar fórmula"}
+        </button>
+      </div>
+      <div className="card flat">
+        {insumos.map(i => (
+          <div className="row" key={i.id}>
+            <div className="row-title">{i.label}</div>
+            {editFormula ? (
+              <input type="number" min="0" step="0.1" value={data.formula[i.id]} onChange={e => setFormulaVal(i.id, e.target.value)} style={{ width: 90, textAlign: "right" }} />
+            ) : (
+              <div className="row-title">{fmtKg(data.formula[i.id])} kg</div>
+            )}
+          </div>
+        ))}
+      </div>
+      {editFormula && (
+        <button className="btn btn-secondary btn-sm" onClick={restaurarFormula} style={{ marginBottom: 16 }}>Restaurar fórmula padrão</button>
+      )}
+
+      <div className="section-label">Estoque bruto por insumo</div>
+      <div className="card flat">
+        {insumos.map(i => {
+          const ins = data.insumosStock[i.id];
+          const formula = data.formula[i.id] || 0;
+          const batidas = formula > 0 ? ins.stockKg / formula : null;
+          const batidasColor = batidas === null ? "var(--color-text-secondary)"
+            : batidas >= 10 ? "#3B6D11"
+            : batidas >= 7  ? "#8a5811"
+            : "#A32D2D";
+          const batidasBg = batidas === null ? "transparent"
+            : batidas >= 10 ? "#EEF5E6"
+            : batidas >= 7  ? "#FAEEDA"
+            : "#FBEAEA";
+          return (
+            <div className="row" key={i.id}>
+              <div>
+                <div className="row-title">{i.label}</div>
+                <div className="row-sub">{fmtMoeda(ins.avgPrice)}/kg (média) · valor {fmtMoeda(ins.stockKg * ins.avgPrice)}</div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div className="row-title" style={{ textAlign: "right" }}>{fmtKg(ins.stockKg)} kg</div>
+                {batidas !== null && (
+                  <div style={{
+                    fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 20,
+                    background: batidasBg, color: batidasColor, whiteSpace: "nowrap",
+                  }}>
+                    {batidas.toLocaleString("pt-BR", { maximumFractionDigits: 1 })} bat.
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── PAINEL COMPRA / AJUSTE ── */}
+      <div className="card card-accent" style={{ padding: 0, overflow: "hidden" }}>
+        {/* toggle */}
+        <div style={{ display: "flex", borderBottom: "0.5px solid var(--color-border-tertiary)", padding: "0 1.1rem" }}>
+          <button style={sTab(modo === "compra")} onClick={() => setModo("compra")}>Registrar compra</button>
+          <button style={sTab(modo === "ajuste")} onClick={() => setModo("ajuste")}>Reajuste de estoque</button>
+        </div>
+
+        {modo === "compra" && (
+          <div style={{ padding: "1rem 1.1rem" }}>
+            <div className="formgrid" style={{ marginBottom: 10 }}>
+              <select value={compraInsumo} onChange={e => setCompraInsumo(e.target.value)} className="grow">
+                {insumos.map(i => <option key={i.id} value={i.id}>{i.label}</option>)}
+              </select>
+            </div>
+            <div className="formgrid">
+              <div>
+                <label>Quantidade (kg)</label><br />
+                <input type="number" min="0" step="0.1" value={compraKg} onChange={e => setCompraKg(e.target.value)} style={{ width: 100 }} />
+              </div>
+              <div>
+                <label>Preço por kg (R$)</label><br />
+                <input type="number" min="0" step="0.01" value={compraPreco} onChange={e => setCompraPreco(e.target.value)} style={{ width: 100 }} />
+              </div>
+              <button className="btn btn-primary" style={{ marginLeft: "auto", alignSelf: "flex-end" }} onClick={handleCompra}>Registrar</button>
+            </div>
+          </div>
+        )}
+
+        {modo === "ajuste" && (
+          <div style={{ padding: "1rem 1.1rem" }}>
+            <div className="helptext" style={{ marginBottom: 12 }}>
+              Use para corrigir o saldo sem registrar uma compra. Informe um valor positivo para adicionar kg ou negativo para remover.
+              O custo médio não é alterado — apenas a quantidade em estoque.
+            </div>
+            <div className="formgrid" style={{ marginBottom: 10 }}>
+              <select value={ajInsumo} onChange={e => setAjInsumo(e.target.value)} className="grow">
+                {insumos.map(i => <option key={i.id} value={i.id}>{i.label} ({fmtKg(data.insumosStock[i.id].stockKg)} kg)</option>)}
+              </select>
+            </div>
+            <div className="formgrid" style={{ marginBottom: 10 }}>
+              <div>
+                <label>Ajuste em kg (use − para reduzir)</label><br />
+                <input type="number" step="0.001" value={ajKg} onChange={e => setAjKg(e.target.value)} style={{ width: 120 }}
+                  placeholder="ex: −2 ou +5" />
+              </div>
+              {ajKg !== "" && data.insumosStock[ajInsumo] && (
+                <div style={{ alignSelf: "flex-end", fontSize: 12, color: "var(--color-text-secondary)" }}>
+                  Saldo após ajuste:{" "}
+                  <strong style={{ color: (data.insumosStock[ajInsumo].stockKg + Number(ajKg)) < 0 ? "var(--red, #A32D2D)" : "var(--color-text-primary)" }}>
+                    {fmtKg(data.insumosStock[ajInsumo].stockKg + Number(ajKg))} kg
+                  </strong>
+                </div>
+              )}
+            </div>
+            <div className="formgrid">
+              <div className="grow">
+                <label>Motivo (opcional)</label><br />
+                <input type="text" value={ajMotivo} onChange={e => setAjMotivo(e.target.value)} placeholder="ex: compra duplicada, perda por vazamento..." style={{ width: "100%" }} />
+              </div>
+              <button className="btn btn-primary" style={{ alignSelf: "flex-end" }} onClick={handleAjuste}>Aplicar ajuste</button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── LOG UNIFICADO ── */}
+      {logUnificado.length > 0 && (
+        <>
+          <div className="section-label">Últimos lançamentos</div>
+          <div className="card flat">
+            {logUnificado.map(entry => {
+              const isAjuste = entry.tipo === "ajuste";
+              const isEditando = !isAjuste && editandoCompra === entry.id;
+              return (
+                <div className="row" key={entry.id} style={{ flexWrap: isEditando ? "wrap" : "nowrap", gap: isEditando ? 10 : undefined }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div className="row-title" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      {getLabel(data.catalog, entry.insumo)}
+                      <span style={{
+                        fontSize: 10, fontWeight: 600, padding: "1px 7px", borderRadius: 20,
+                        background: isAjuste ? "var(--red-bg, #FBEAEA)" : "var(--amber-light, #FAEEDA)",
+                        color: isAjuste ? "var(--red, #A32D2D)" : "var(--amber-dark, #8a5811)",
+                      }}>
+                        {isAjuste ? "reajuste" : "compra"}
+                      </span>
+                    </div>
+                    <div className="row-sub">
+                      {entry.data}
+                      {isAjuste
+                        ? ` · ${entry.motivo} · antes: ${fmtKg(entry.saldoAntes)} kg`
+                        : isEditando ? "" : ` · ${fmtMoeda(entry.precoKg)}/kg`}
+                    </div>
+                  </div>
+
+                  {isEditando ? (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", width: "100%" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                        <input type="number" min="0" step="0.001" value={editKg} onChange={e => setEditKg(e.target.value)}
+                          style={{ width: 80, padding: "4px 6px", fontSize: 13 }} placeholder="kg" />
+                        <span className="row-sub">kg</span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                        <input type="number" min="0" step="0.01" value={editPreco} onChange={e => setEditPreco(e.target.value)}
+                          style={{ width: 80, padding: "4px 6px", fontSize: 13 }} placeholder="R$/kg" />
+                        <span className="row-sub">R$/kg</span>
+                      </div>
+                      <div style={{ display: "flex", gap: 6, marginLeft: "auto" }}>
+                        <button className="btn btn-primary btn-sm" onClick={() => confirmarEdicaoCompra(entry.id)}>✓ Salvar</button>
+                        <button className="btn btn-secondary btn-sm" onClick={() => setEditandoCompra(null)}>✕</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ textAlign: "right", flexShrink: 0 }}>
+                      <div className="row-title" style={{ color: isAjuste && Number(entry.delta) < 0 ? "var(--red, #A32D2D)" : undefined }}>
+                        {isAjuste ? (Number(entry.delta) > 0 ? "+" : "") + fmtKg(entry.delta) : fmtKg(entry.kg)} kg
+                      </div>
+                      {!isAjuste && (
+                        <div className="row-sub" style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end" }}>
+                          {fmtMoeda(entry.valorTotal)}
+                          <button onClick={() => abrirEdicaoCompra(entry)} style={{
+                            fontSize: 11, color: "var(--amber, #BA7517)", background: "none",
+                            border: "none", cursor: "pointer", padding: 0, textDecoration: "underline",
+                          }}>editar</button>
+                        </div>
+                      )}
+                      {isAjuste && <div className="row-sub">→ {fmtKg(entry.saldoDepois)} kg</div>}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function MisturaTab({ data, setData, setMsg }) {
+  const [fracao, setFracao] = useState(1);
+  const insumos = data.catalog.insumos;
+
+  const consumoPreview = insumos.map(i => ({ ...i, qtd: (data.formula[i.id] || 0) * fracao }));
+  const kgPreview = consumoPreview.reduce((a, i) => a + i.qtd, 0);
+  const custoPreview = consumoPreview.reduce((a, i) => a + i.qtd * data.insumosStock[i.id].avgPrice, 0);
+
+  const handleConfirmar = () => {
+    const result = confirmarMistura(data, Number(fracao));
+    if (result.error) { setMsg({ type: "error", text: result.error }); return; }
+    setData(result.state);
+    setMsg({ type: "success", text: `Mistura confirmada: ${fmtKg(kgPreview)} kg adicionados à massa disponível.` });
+  };
+
+  return (
+    <div className="content">
+      <div className="helptext">
+        Confirme a mistura (batida) que será usada na produção das peças. A fração representa quanto da fórmula
+        completa você está rodando — no máximo 1x. A massa entra direto na pool disponível para o forno.
+      </div>
+
+      <div className="meta-grid cols-2">
+        <MetaCard label="Massa disponível" value={fmtKg(data.massaPool.kg) + " kg"} />
+        <MetaCard label="Custo médio da massa" value={fmtMoeda(data.massaPool.avgCost) + "/kg"} />
+      </div>
+
+      <div className="card card-accent">
+        <div className="section-label" style={{ marginTop: 0 }}>Confirmar nova batida</div>
+        <div className="formgrid" style={{ marginBottom: 12 }}>
+          <label>Fração da fórmula (0 a 1)</label>
+          <input type="number" min="0" max="1" step="0.05" value={fracao} onChange={e => setFracao(e.target.value)} style={{ width: 90 }} />
+        </div>
+        <table className="simple">
+          <thead><tr><th>Insumo</th><th style={{ textAlign: "right" }}>Consumo</th></tr></thead>
+          <tbody>
+            {consumoPreview.map(i => (
+              <tr key={i.id}><td>{i.label}</td><td style={{ textAlign: "right" }}>{fmtKg(i.qtd)} kg</td></tr>
+            ))}
+          </tbody>
+        </table>
+        <hr className="sep" />
+        <div className="formgrid" style={{ justifyContent: "space-between", marginBottom: 12 }}>
+          <div><b>{fmtKg(kgPreview)} kg</b> de massa · custo {fmtMoeda(custoPreview)}</div>
+        </div>
+        <button className="btn btn-primary" onClick={handleConfirmar}>Confirmar batida</button>
+      </div>
+
+      {data.misturaLog.length > 0 && (
+        <>
+          <div className="section-label">Últimas misturas</div>
+          <div className="card flat">
+            {data.misturaLog.slice(0, 8).map(m => (
+              <div className="row" key={m.id}>
+                <div>
+                  <div className="row-title">{(m.fracao * 100).toFixed(0)}% da fórmula</div>
+                  <div className="row-sub">{m.data}</div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div className="row-title">{fmtKg(m.kg)} kg</div>
+                  <div className="row-sub">{fmtMoeda(m.custo)}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function FornoTab({ data, setData, setMsg }) {
+  const [ciclosInput, setCiclosInput] = useState(1);
+  const [editandoMassa, setEditandoMassa] = useState(false);
+  const [massaInput, setMassaInput] = useState("");
+  const tiras = data.tiras;
+  const pecaList = getPecaList(data.catalog);
+  const totalTiras = Object.values(tiras).reduce((a, b) => a + b, 0);
+
+  const setTira = (id, v) => {
+    const n = { ...tiras, [id]: Math.max(0, v) };
+    if (Object.values(n).reduce((a, b) => a + b, 0) <= 16) setData(prev => ({ ...prev, tiras: n }));
+  };
+
+  const kgPorCiclo = pecaList.reduce((a, p) => a + (tiras[p.id] || 0) * p.pecasPorTira * p.pesoKg, 0);
+  const kgPreview = kgPorCiclo * (Number(ciclosInput) || 0);
+
+  const handleAdicionar = () => {
+    const result = adicionarLote(data, tiras, Math.max(1, Math.round(Number(ciclosInput) || 1)));
+    if (result.error) { setMsg({ type: "error", text: result.error }); return; }
+    setData(result.state);
+    setMsg({ type: "success", text: `Lote adicionado à produção do dia.` });
+  };
+
+  const abrirEdicaoMassa = () => {
+    setMassaInput(fmtKg(data.massaPool.kg).replace(/\./g, "").replace(",", "."));
+    setEditandoMassa(true);
+  };
+
+  const confirmarMassaEdit = () => {
+    const novo = Math.max(0, Number(String(massaInput).replace(",", ".")) || 0);
+    setData(prev => ({ ...prev, massaPool: { ...prev.massaPool, kg: novo } }));
+    setEditandoMassa(false);
+    setMsg({ type: "success", text: `Massa disponível ajustada para ${fmtKg(novo)} kg.` });
+  };
+
+  return (
+    <div className="content">
+      <div className="helptext">
+        Monte a combinação de tiras (máximo 16) e informe quantos ciclos ela rodou. Você pode trocar a combinação
+        e adicionar novamente — tudo soma na produção do dia. Cada peça consome massa da pool da aba Mistura.
+        Nomes, pesos e peças por tira são editados na aba Catálogo.
+      </div>
+
+      <div className="section-label">Peças do corpo</div>
+      <div className="card flat">
+        {data.catalog.corpo.map(p => (
+          <div className="row" key={p.id}>
+            <div>
+              <div className="row-title">{p.label}{(tiras[p.id] || 0) > 0 && <span className="row-sub" style={{ marginLeft: 8 }}>{(tiras[p.id] || 0) * p.pecasPorTira} peças/ciclo</span>}</div>
+              <div className="row-sub">{p.pecasPorTira} peças/tira · {Math.round(p.pesoKg * 1000)}g/peça</div>
+            </div>
+            <div className="stepper">
+              <button onClick={() => setTira(p.id, (tiras[p.id] || 0) - 1)}>−</button>
+              <span>{tiras[p.id] || 0}</span>
+              <button onClick={() => setTira(p.id, (tiras[p.id] || 0) + 1)}>+</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="section-label">Cabeças — prioridade de montagem fica a seu critério na aba Montagem</div>
+      <div className="card flat">
+        {data.catalog.modelos.map(p => (
+          <div className="row" key={p.id}>
+            <div>
+              <div className="row-title">{p.label}{(tiras[p.id] || 0) > 0 && <span className="row-sub" style={{ marginLeft: 8 }}>{(tiras[p.id] || 0) * p.pecasPorTira} peças/ciclo</span>}</div>
+              <div className="row-sub">{p.pecasPorTira} peças/tira · {Math.round(p.pesoKg * 1000)}g/peça{p.note ? " · " + p.note : ""}</div>
+            </div>
+            <div className="stepper">
+              <button onClick={() => setTira(p.id, (tiras[p.id] || 0) - 1)}>−</button>
+              <span>{tiras[p.id] || 0}</span>
+              <button onClick={() => setTira(p.id, (tiras[p.id] || 0) + 1)}>+</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="meta-grid">
+        <MetaCard label="Tiras em uso" value={`${totalTiras}/16`} />
+        <MetaCard label="Discos ocupados" value={`${Math.ceil(totalTiras / 4)}/4`} />
+        <div className="meta-card" style={{ gridColumn: "span 1" }}>
+          <div className="l">Massa disponível</div>
+          {editandoMassa ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 2 }}>
+              <input
+                type="number" min="0" step="0.001"
+                value={massaInput}
+                onChange={e => setMassaInput(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter") confirmarMassaEdit(); if (e.key === "Escape") setEditandoMassa(false); }}
+                autoFocus
+                style={{ width: 80, fontSize: 14, padding: "3px 6px" }}
+              />
+              <span style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>kg</span>
+              <button className="btn btn-primary btn-sm" onClick={confirmarMassaEdit} style={{ padding: "3px 10px", fontSize: 12 }}>✓</button>
+              <button className="btn btn-secondary btn-sm" onClick={() => setEditandoMassa(false)} style={{ padding: "3px 8px", fontSize: 12 }}>✕</button>
+            </div>
+          ) : (
+            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+              <div className="v">{fmtKg(data.massaPool.kg)} kg</div>
+              <button
+                onClick={abrirEdicaoMassa}
+                style={{ fontSize: 11, color: "var(--amber, #BA7517)", background: "none", border: "none", cursor: "pointer", padding: 0, textDecoration: "underline" }}
+              >
+                ajustar
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="card card-accent">
+        <div className="section-label" style={{ marginTop: 0 }}>Adicionar à produção do dia</div>
+        <div className="row-sub" style={{ marginBottom: 10 }}>Combinação atual: {totalTiras > 0 ? combinSummary(tiras, data.catalog) : "nenhuma tira selecionada"}</div>
+        <div className="formgrid" style={{ marginBottom: totalTiras > 0 ? 14 : 0 }}>
+          <label>Ciclos rodados</label>
+          <input type="number" min="1" value={ciclosInput} onChange={e => setCiclosInput(e.target.value)} style={{ width: 70 }} />
+          <div className="row-sub">consumo estimado: {fmtKg(kgPreview)} kg</div>
+          <button className="btn btn-primary" style={{ marginLeft: "auto" }} disabled={totalTiras === 0} onClick={handleAdicionar}>Adicionar</button>
+        </div>
+        {totalTiras > 0 && (Number(ciclosInput) || 0) > 0 && (() => {
+          const ciclos = Number(ciclosInput) || 0;
+          const pecasAtivas = getPecaList(data.catalog).filter(p => (tiras[p.id] || 0) > 0);
+          return (
+            <div style={{ borderTop: "0.5px solid var(--border)", paddingTop: 12 }}>
+              <div className="row-sub" style={{ marginBottom: 8 }}>
+                Peças produzidas em <strong>{ciclos} {ciclos === 1 ? "ciclo" : "ciclos"}</strong>:
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 6 }}>
+                {pecasAtivas.map(p => {
+                  const qty = (tiras[p.id] || 0) * p.pecasPorTira * ciclos;
+                  return (
+                    <div key={p.id} style={{
+                      display: "flex", justifyContent: "space-between", alignItems: "center",
+                      padding: "6px 10px", background: "var(--bg, #FAF9F7)", borderRadius: 6,
+                    }}>
+                      <span style={{ fontSize: 12, color: "var(--text-soft)" }}>{p.label}</span>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: "var(--amber, #BA7517)" }}>{qty}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+      </div>
+    </div>
+  );
+}
+
+function ProducaoTab({ data, setData, setMsg }) {
+  const pecaList = getPecaList(data.catalog);
+  const [perdasInput, setPerdasInput] = useState(Object.fromEntries(pecaList.map(p => [p.id, 0])));
+  const hoje = new Date();
+  const [selectedYear, setSelectedYear] = useState(hoje.getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(hoje.getMonth() + 1);
+  const [selectedDay, setSelectedDay] = useState(hoje.getDate());
+  const [observacao, setObservacao] = useState("");
+  const [editandoPeca, setEditandoPeca] = useState(null);
+  const [pecaQtdInput, setPecaQtdInput] = useState("");
+
+  const confirmarPecaEdit = (pecaId) => {
+    const novaQty = Math.max(0, Math.round(Number(pecaQtdInput) || 0));
+    const old = data.pecaStock[pecaId] || { qty: 0, avgCost: 0 };
+    setData(prev => ({
+      ...prev,
+      pecaStock: { ...prev.pecaStock, [pecaId]: { ...old, qty: novaQty } },
+    }));
+    const label = pecaList.find(p => p.id === pecaId)?.label || pecaId;
+    setMsg({ type: "success", text: `Estoque de ${label} ajustado para ${novaQty} un.` });
+    setEditandoPeca(null);
+  };
+
+  const removeLote = (id) => setData(prev => ({ ...prev, lotesHoje: prev.lotesHoje.filter(l => l.id !== id) }));
+
+  const totalProduzidoHoje = data.lotesHoje.reduce((a, l) => a + Object.values(l.pecasProduzidas).reduce((x, y) => x + y, 0), 0);
+  const totalCustoHoje = data.lotesHoje.reduce((a, l) => a + l.custoProducao, 0);
+  const totalCiclosHoje = data.lotesHoje.reduce((a, l) => a + l.ciclos, 0);
+  const totalPerdasHoje = Object.values(data.perdasHojeAccum).reduce((a, b) => a + b, 0);
+
+  const handlePerdas = () => {
+    const result = registrarPerdas(data, perdasInput);
+    if (result.error) { setMsg({ type: "error", text: result.error }); return; }
+    setData(result.state);
+    setMsg({ type: "success", text: result.avisos && result.avisos.length ? "Perdas registradas (com ajustes): " + result.avisos.join("; ") : "Perdas registradas." });
+    setPerdasInput(Object.fromEntries(pecaList.map(p => [p.id, 0])));
+  };
+
+  const handleSalvarDia = () => {
+    setData(prev => salvarDia(prev, selectedYear, selectedMonth, selectedDay, observacao));
+    const mesNome = new Date(selectedYear, selectedMonth - 1).toLocaleDateString("pt-BR", { month: "long" });
+    setMsg({ type: "success", text: `Produção de ${selectedDay} de ${mesNome} de ${selectedYear} salva no histórico.` });
+    setObservacao("");
+  };
+
+  return (
+    <div className="content">
+      <div className="helptext">Acompanhe os lotes produzidos hoje, registre perdas unitárias e veja o estoque acumulado de peças.</div>
+
+      <div className="section-label">Lotes adicionados hoje</div>
+      {data.lotesHoje.length === 0 ? (
+        <div className="card empty-msg">Nenhum lote ainda. Vá até a aba <b>Forno</b> para adicionar.</div>
+      ) : (
+        <div className="card flat">
+          {data.lotesHoje.map((l, i) => (
+            <div className="row" key={l.id}>
+              <div>
+                <div className="row-title">Lote {i + 1} · {combinSummary(l.tiras, data.catalog)}</div>
+                <div className="row-sub">{l.ciclos} ciclos · {fmtKg(l.kgConsumido)} kg · {fmtMoeda(l.custoProducao)}</div>
+              </div>
+              <button className="btn btn-secondary btn-sm" onClick={() => removeLote(l.id)}>✕</button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="meta-grid">
+        <MetaCard label="Ciclos hoje" value={totalCiclosHoje} />
+        <MetaCard label="Peças produzidas" value={fmtNum(totalProduzidoHoje)} />
+        <MetaCard label="Custo produção" value={fmtMoeda(totalCustoHoje)} small />
+      </div>
+
+      <div className="section-label">Perdas do dia <span style={{ textTransform: "none", fontWeight: 400 }}>— peças unitárias quebradas/erradas (acumulado hoje: {fmtNum(totalPerdasHoje)})</span></div>
+      <div className="card">
+        <div className="pecas-grid" style={{ marginBottom: 12 }}>
+          {pecaList.map(p => (
+            <div className="cell" key={p.id}>
+              <span>{p.label}</span>
+              <input type="number" min="0" value={perdasInput[p.id] || 0} onChange={e => setPerdasInput(prev => ({ ...prev, [p.id]: Number(e.target.value) }))} />
+            </div>
+          ))}
+        </div>
+        <button className="btn btn-primary" onClick={handlePerdas}>Registrar perdas</button>
+      </div>
+
+      <div className="section-label">Estoque de peças (acumulado)</div>
+      <div className="card flat">
+        {pecaList.map(p => {
+          const s = data.pecaStock[p.id] || { qty: 0, avgCost: 0 };
+          const editando = editandoPeca === p.id;
+          return (
+            <div className="row" key={p.id}>
+              <div>
+                <div className="row-title">{p.label}</div>
+                <div className="row-sub">custo médio {fmtMoeda(s.avgCost)}/un. · valor {fmtMoeda(s.qty * s.avgCost)}</div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {editando ? (
+                  <>
+                    <input
+                      type="number" min="0" step="1"
+                      value={pecaQtdInput}
+                      onChange={e => setPecaQtdInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === "Enter") confirmarPecaEdit(p.id); if (e.key === "Escape") setEditandoPeca(null); }}
+                      autoFocus
+                      style={{ width: 72, fontSize: 14, padding: "3px 6px", textAlign: "right" }}
+                    />
+                    <button className="btn btn-primary btn-sm" onClick={() => confirmarPecaEdit(p.id)} style={{ padding: "3px 10px", fontSize: 12 }}>✓</button>
+                    <button className="btn btn-secondary btn-sm" onClick={() => setEditandoPeca(null)} style={{ padding: "3px 8px", fontSize: 12 }}>✕</button>
+                  </>
+                ) : (
+                  <>
+                    <div className="row-title">{fmtNum(s.qty)}</div>
+                    <button
+                      onClick={() => { setPecaQtdInput(String(Math.round(s.qty))); setEditandoPeca(p.id); }}
+                      style={{ fontSize: 11, color: "var(--amber, #BA7517)", background: "none", border: "none", cursor: "pointer", padding: 0, textDecoration: "underline" }}
+                    >
+                      ajustar
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="card card-accent">
+        <div className="section-label" style={{ marginTop: 0 }}>Fechar dia e salvar no histórico</div>
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ fontSize: 13, color: "var(--color-text-primary)", display: "block", marginBottom: 6 }}>
+            Observações do dia <span style={{ fontWeight: 400, color: "var(--color-text-secondary)" }}>(opcional — forno parou, intercorrências, etc.)</span>
+          </label>
+          <textarea
+            value={observacao}
+            onChange={e => setObservacao(e.target.value)}
+            placeholder="Ex: forno parou 2h por manutenção · produção reduzida pela manhã · ajuste na mistura..."
+            rows={3}
+            style={{
+              width: "100%", resize: "vertical", fontFamily: "inherit", fontSize: 13,
+              padding: "8px 10px", border: "1px solid var(--color-border-secondary)",
+              borderRadius: 8, color: "var(--color-text-primary)", background: "var(--color-background-primary)",
+            }}
+          />
+        </div>
+        <div className="formgrid" style={{ flexWrap: "wrap", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <label>Mês</label>
+            <select value={selectedMonth} onChange={e => setSelectedMonth(Number(e.target.value))}>
+              {["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"].map((m, i) => (
+                <option key={i+1} value={i+1}>{m}</option>
+              ))}
+            </select>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <label>Ano</label>
+            <select value={selectedYear} onChange={e => setSelectedYear(Number(e.target.value))}>
+              {[2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
+            </select>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <label>Dia</label>
+            <select value={selectedDay} onChange={e => setSelectedDay(Number(e.target.value))}>
+              {Array.from({ length: 31 }, (_, i) => i + 1).map(d => {
+                const chave = `${selectedYear}-${String(selectedMonth).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+                return <option key={d} value={d}>{d}{data.historico[chave] ? " · já salvo" : ""}</option>;
+              })}
+            </select>
+          </div>
+          <button className="btn btn-primary" style={{ marginLeft: "auto" }} onClick={handleSalvarDia} disabled={data.lotesHoje.length === 0 && data.montagemHoje.length === 0}>
+            Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MontagemTab({ data, setData, setMsg }) {
+  const modelos = data.catalog.modelos;
+  const [modelo, setModelo] = useState(modelos[0] ? modelos[0].id : "");
+  const [torsoTipo, setTorsoTipo] = useState("torso_m");
+  const [qty, setQty] = useState(1);
+  const [editandoBoneca, setEditandoBoneca] = useState(null);
+  const [bonecaQtdInput, setBonecaQtdInput] = useState("");
+
+  const confirmarBonecaEdit = (modeloId) => {
+    const novaQty = Math.max(0, Math.round(Number(bonecaQtdInput) || 0));
+    const old = data.bonecasStock[modeloId] || { qty: 0, avgCost: 0 };
+    setData(prev => ({
+      ...prev,
+      bonecasStock: { ...prev.bonecasStock, [modeloId]: { ...old, qty: novaQty } },
+    }));
+    const label = modelos.find(m => m.id === modeloId)?.label || modeloId;
+    setMsg({ type: "success", text: `Estoque de ${label} ajustado para ${novaQty} un.` });
+    setEditandoBoneca(null);
+  };
+
+  const model = modelos.find(m => m.id === modelo) || modelos[0];
+  if (!model) {
+    return <div className="content"><div className="empty-msg">Nenhum modelo cadastrado. Adicione um na aba Catálogo.</div></div>;
+  }
+  const torsoId = model.torsoMode === "choice" ? torsoTipo : (model.torsoMode === "m" ? "torso_m" : "torso_f");
+  const needed = { braco_dir: Number(qty) || 0, braco_esq: Number(qty) || 0, perna_dir: Number(qty) || 0, perna_esq: Number(qty) || 0 };
+  needed[torsoId] = (needed[torsoId] || 0) + (Number(qty) || 0);
+  needed[model.id] = (needed[model.id] || 0) + (Number(qty) || 0);
+
+  const handleMontar = () => {
+    const result = montar(data, model.id, torsoTipo, Math.max(1, Math.round(Number(qty) || 1)));
+    if (result.error) { setMsg({ type: "error", text: result.error }); return; }
+    setData(result.state);
+    setMsg({ type: "success", text: `${qty} ${model.label} montada(s) e adicionada(s) ao estoque de bonecas prontas.` });
+  };
+
+  return (
+    <div className="content">
+      <div className="helptext">Selecione o modelo e a quantidade que deseja montar — as peças necessárias serão retiradas do estoque.</div>
+
+      <div className="card card-accent">
+        <div className="section-label" style={{ marginTop: 0 }}>Montar bonecas</div>
+        <div className="formgrid" style={{ marginBottom: 10 }}>
+          <select value={model.id} onChange={e => setModelo(e.target.value)}>
+            {modelos.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}
+          </select>
+          {model.torsoMode === "choice" && (
+            <select value={torsoTipo} onChange={e => setTorsoTipo(e.target.value)}>
+              <option value="torso_m">Menino</option>
+              <option value="torso_f">Menina</option>
+            </select>
+          )}
+          <label>Quantidade</label>
+          <input type="number" min="1" value={qty} onChange={e => setQty(e.target.value)} style={{ width: 80 }} />
+        </div>
+
+        <table className="simple" style={{ marginBottom: 12 }}>
+          <thead><tr><th>Peça necessária</th><th style={{ textAlign: "right" }}>Necessário</th><th style={{ textAlign: "right" }}>Disponível</th></tr></thead>
+          <tbody>
+            {Object.keys(needed).map(pid => {
+              const stock = data.pecaStock[pid] || { qty: 0 };
+              const ok = stock.qty >= needed[pid];
+              return (
+                <tr key={pid}>
+                  <td>{getLabel(data.catalog, pid)}</td>
+                  <td style={{ textAlign: "right" }}>{fmtNum(needed[pid])}</td>
+                  <td style={{ textAlign: "right" }}><span className={`badge ${ok ? "ok" : "bad"}`}>{fmtNum(stock.qty)}</span></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+
+        <button className="btn btn-primary" onClick={handleMontar}>Montar</button>
+      </div>
+
+      <div className="section-label">Bonecas prontas em estoque</div>
+      <div className="card flat">
+        {modelos.map(m => {
+          const s = data.bonecasStock[m.id] || { qty: 0, avgCost: 0 };
+          const editando = editandoBoneca === m.id;
+          return (
+            <div className="row" key={m.id}>
+              <div>
+                <div className="row-title">{m.label}</div>
+                <div className="row-sub">custo médio {fmtMoeda(s.avgCost)}/un.</div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {editando ? (
+                  <>
+                    <input
+                      type="number" min="0" step="1"
+                      value={bonecaQtdInput}
+                      onChange={e => setBonecaQtdInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === "Enter") confirmarBonecaEdit(m.id); if (e.key === "Escape") setEditandoBoneca(null); }}
+                      autoFocus
+                      style={{ width: 72, fontSize: 14, padding: "3px 6px", textAlign: "right" }}
+                    />
+                    <button className="btn btn-primary btn-sm" onClick={() => confirmarBonecaEdit(m.id)} style={{ padding: "3px 10px", fontSize: 12 }}>✓</button>
+                    <button className="btn btn-secondary btn-sm" onClick={() => setEditandoBoneca(null)} style={{ padding: "3px 8px", fontSize: 12 }}>✕</button>
+                  </>
+                ) : (
+                  <>
+                    <div className="row-title">{fmtNum(s.qty)}</div>
+                    <button
+                      onClick={() => { setBonecaQtdInput(String(Math.round(s.qty))); setEditandoBoneca(m.id); }}
+                      style={{ fontSize: 11, color: "var(--amber, #BA7517)", background: "none", border: "none", cursor: "pointer", padding: 0, textDecoration: "underline" }}
+                    >
+                      ajustar
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {data.montagemHoje.length > 0 && (
+        <>
+          <div className="section-label">Montagens de hoje</div>
+          <div className="card flat">
+            {data.montagemHoje.map(m => {
+              const mdl = modelos.find(x => x.id === m.modelo);
+              const annotate = mdl && mdl.torsoMode === "choice" ? (m.torso === "torso_m" ? " (menino)" : " (menina)") : "";
+              return (
+                <div className="row" key={m.id}>
+                  <div className="row-title">{mdl ? mdl.label : m.modelo}{annotate}</div>
+                  <div style={{ textAlign: "right" }}>
+                    <div className="row-title">{m.qty} un.</div>
+                    <div className="row-sub">{fmtMoeda(m.custoTotal)}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function HistoricoTab({ data, viewDay, setViewDay, setData, setMsg }) {
+  const hoje = new Date();
+  const [navYear, setNavYear] = useState(hoje.getFullYear());
+  const [navMonth, setNavMonth] = useState(hoje.getMonth() + 1);
+
+  const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+
+  const prevMes = () => {
+    if (navMonth === 1) { setNavYear(y => y - 1); setNavMonth(12); }
+    else setNavMonth(m => m - 1);
+    setViewDay(null);
+  };
+  const nextMes = () => {
+    if (navMonth === 12) { setNavYear(y => y + 1); setNavMonth(1); }
+    else setNavMonth(m => m + 1);
+    setViewDay(null);
+  };
+
+  const chave = (d) => `${navYear}-${String(navMonth).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+
+  const removerRegistro = (key) => {
+    setData(prev => { const h = { ...prev.historico }; delete h[key]; return { ...prev, historico: h }; });
+    if (viewDay === key) setViewDay(null);
+    setMsg({ type: "success", text: "Registro removido." });
+  };
+
+  const reg = viewDay ? data.historico[viewDay] : null;
+
+  return (
+    <div className="content">
+      <div className="helptext">Navegue pelos meses para consultar os registros diários de produção.</div>
+
+      {/* Navegação de mês */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+        <button className="btn btn-secondary btn-sm" onClick={prevMes}>←</button>
+        <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text)" }}>
+          {MESES[navMonth - 1]} {navYear}
+        </div>
+        <button className="btn btn-secondary btn-sm" onClick={nextMes}>→</button>
+      </div>
+
+      {/* Calendário do mês */}
+      <div className="calendar">
+        {Array.from({ length: 31 }, (_, i) => i + 1).map(d => {
+          const key = chave(d);
+          const has = !!data.historico[key];
+          const totalBonecas = has ? Object.values(data.historico[key].bonecasMontadas).reduce((a, b) => a + b, 0) : 0;
+          return (
+            <button key={d} className={`day-btn ${has ? "has" : ""} ${viewDay === key ? "active" : ""}`} onClick={() => setViewDay(viewDay === key ? null : key)}>
+              <span className="d">{d}</span>
+              {has && <span className="n">{totalBonecas}</span>}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Detalhe do dia selecionado */}
+      {reg ? (
+        <div className="card">
+          <div className="formgrid" style={{ justifyContent: "space-between", marginBottom: 14 }}>
+            <div className="section-label" style={{ margin: 0 }}>
+              {(() => { const [y,m,d] = viewDay.split("-"); return `${Number(d)} de ${MESES[Number(m)-1]} de ${y}`; })()}
+            </div>
+            <button className="btn btn-secondary btn-sm" onClick={() => removerRegistro(viewDay)}>Remover registro</button>
+          </div>
+
+          <div className="meta-grid">
+            <MetaCard label="Peças produzidas" value={fmtNum(Object.values(reg.produced).reduce((a, b) => a + b, 0))} />
+            <MetaCard label="Bonecas montadas" value={fmtNum(Object.values(reg.bonecasMontadas).reduce((a, b) => a + b, 0))} />
+            <MetaCard label="Custo do dia" value={fmtMoeda(reg.custoProducao + reg.custoMontagem)} small />
+          </div>
+
+          <div className="section-label">Bonecas montadas por modelo</div>
+          <table className="simple">
+            <tbody>
+              {Object.keys(reg.bonecasMontadas).filter(k => reg.bonecasMontadas[k] > 0).map(k => (
+                <tr key={k}><td>{getLabel(data.catalog, k)}</td><td style={{ textAlign: "right" }}>{fmtNum(reg.bonecasMontadas[k])}</td></tr>
+              ))}
+              {Object.values(reg.bonecasMontadas).every(v => v === 0) && <tr><td colSpan="2" style={{ color: "var(--text-soft)" }}>Nenhuma boneca montada neste dia.</td></tr>}
+            </tbody>
+          </table>
+
+          <div className="section-label">Lotes rodados</div>
+          <table className="simple">
+            <tbody>
+              {reg.lotes.map((l, i) => (
+                <tr key={l.id || i}><td>{combinSummary(l.tiras, data.catalog)}</td><td style={{ textAlign: "right" }}>{l.ciclos} ciclos</td></tr>
+              ))}
+              {reg.lotes.length === 0 && <tr><td colSpan="2" style={{ color: "var(--text-soft)" }}>Nenhum lote registrado.</td></tr>}
+            </tbody>
+          </table>
+
+          <div className="section-label">Perdas registradas</div>
+          <table className="simple">
+            <tbody>
+              {Object.keys(reg.perdas).filter(k => reg.perdas[k] > 0).map(k => (
+                <tr key={k}><td>{getLabel(data.catalog, k)}</td><td style={{ textAlign: "right" }}>{fmtNum(reg.perdas[k])}</td></tr>
+              ))}
+              {Object.values(reg.perdas).every(v => v === 0) && <tr><td colSpan="2" style={{ color: "var(--text-soft)" }}>Nenhuma perda registrada.</td></tr>}
+            </tbody>
+          </table>
+
+          {reg.observacao && (
+            <>
+              <div className="section-label" style={{ marginTop: 14 }}>Observações</div>
+              <div style={{
+                background: "var(--amber-light, #FAEEDA)", borderRadius: 8,
+                padding: "10px 14px", fontSize: 13, color: "var(--text, #2B2924)",
+                lineHeight: 1.6, whiteSpace: "pre-wrap",
+              }}>
+                {reg.observacao}
+              </div>
+            </>
+          )}
+        </div>
+      ) : (
+        <div className="empty-msg">
+          {Object.keys(data.historico).length === 0
+            ? "Nenhum dia registrado ainda."
+            : "Selecione um dia preenchido para ver os detalhes."}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============================== APP ============================== */
+
+function App() {
+  const [data, setData] = usePersistedState(STORAGE_KEY, DEFAULT_STATE);
+  const [tab, setTab] = useState("resumo");
+  const [msg, setMsg] = useState(null);
+  const [viewDay, setViewDay] = useState(null);
+
+  const [cfg, setCfg] = useSyncConfig();
+  const [cfgDraft, setCfgDraft] = useState(cfg);
+  const [syncStatus, setSyncStatus] = useState({ state: "idle", lastSync: null, errorMsg: "" });
+  const skipNextPush = useRef(false);
+  const pushTimer = useRef(null);
+  const didInitialPull = useRef(false);
+
+  useEffect(() => {
+    if (!msg) return;
+    const t = setTimeout(() => setMsg(null), 6000);
+    return () => clearTimeout(t);
+  }, [msg]);
+
+  const nowStr = () => new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
+  const doPull = async (silent) => {
+    if (!cfg.url) return;
+    setSyncStatus(s => ({ ...s, state: "syncing" }));
+    try {
+      const pulled = await pullFromCloud(cfg);
+      skipNextPush.current = true;
+      setData(mergeWithDefaults(pulled));
+      setSyncStatus({ state: "ok", lastSync: nowStr(), errorMsg: "" });
+      if (!silent) setMsg({ type: "success", text: "Dados atualizados a partir da nuvem." });
+    } catch (e) {
+      setSyncStatus({ state: "error", lastSync: null, errorMsg: e.message });
+      if (!silent) setMsg({ type: "error", text: "Erro ao baixar da nuvem: " + e.message });
+    }
+  };
+
+  const doPush = async (silent) => {
+    if (!cfg.url) return;
+    setSyncStatus(s => ({ ...s, state: "syncing" }));
+    try {
+      await pushToCloud(cfg, data);
+      setSyncStatus({ state: "ok", lastSync: nowStr(), errorMsg: "" });
+      if (!silent) setMsg({ type: "success", text: "Dados enviados para a nuvem." });
+    } catch (e) {
+      setSyncStatus({ state: "error", lastSync: null, errorMsg: e.message });
+      if (!silent) setMsg({ type: "error", text: "Erro ao enviar para a nuvem: " + e.message });
+    }
+  };
+
+  useEffect(() => {
+    if (cfg.url && !didInitialPull.current) {
+      didInitialPull.current = true;
+      doPull(true);
+    }
+  }, [cfg.url]);
+
+  useEffect(() => {
+    if (!cfg.url) return;
+    if (skipNextPush.current) { skipNextPush.current = false; return; }
+    if (pushTimer.current) clearTimeout(pushTimer.current);
+    pushTimer.current = setTimeout(() => doPush(true), 2500);
+    return () => { if (pushTimer.current) clearTimeout(pushTimer.current); };
+  }, [data]);
+
+  const handleSaveCfg = (draft) => {
+    setCfg(draft);
+    setMsg({ type: "success", text: "Configuração de sincronização salva." });
+    didInitialPull.current = false;
+  };
+
+  const handleReset = () => {
+    if (!window.confirm("Isso vai apagar todos os dados (estoques, histórico, catálogo). Confirma?")) return;
+    setData(DEFAULT_STATE);
+    setMsg({ type: "success", text: "Todos os dados foram resetados." });
+  };
+
+  const TABS = [
+    ["resumo", "Resumo"],
+    ["catalogo", "Catálogo"],
+    ["materia", "Matéria-prima"],
+    ["mistura", "Mistura"],
+    ["forno", "Forno"],
+    ["producao", "Produção"],
+    ["montagem", "Montagem"],
+    ["historico", "Histórico"],
+  ];
+
+  return (
+    <div>
+      <div className="header">
+        <h1>Controle de Produção</h1>
+        <p>Bonecas Reborn — matéria-prima → mistura → produção → montagem</p>
+      </div>
+      <div className="tabs">
+        {TABS.map(([id, label]) => (
+          <button key={id} className={`tab-btn ${tab === id ? "active" : ""}`} onClick={() => setTab(id)}>{label}</button>
+        ))}
+      </div>
+      <div style={{ padding: msg ? "12px 20px 0" : 0 }}>
+        <Banner msg={msg} onClose={() => setMsg(null)} />
+      </div>
+
+      {tab === "resumo" && (
+        <ResumoTab
+          data={data}
+          onReset={handleReset}
+          cfg={cfg}
+          cfgDraft={cfgDraft}
+          setCfgDraft={setCfgDraft}
+          onSaveCfg={handleSaveCfg}
+          syncStatus={syncStatus}
+          onPull={() => doPull(false)}
+          onPush={() => doPush(false)}
+        />
+      )}
+      {tab === "catalogo" && <CatalogoTab data={data} setData={setData} setMsg={setMsg} />}
+      {tab === "materia" && <MateriaPrimaTab data={data} setData={setData} setMsg={setMsg} />}
+      {tab === "mistura" && <MisturaTab data={data} setData={setData} setMsg={setMsg} />}
+      {tab === "forno" && <FornoTab data={data} setData={setData} setMsg={setMsg} />}
+      {tab === "producao" && <ProducaoTab data={data} setData={setData} setMsg={setMsg} />}
+      {tab === "montagem" && <MontagemTab data={data} setData={setData} setMsg={setMsg} />}
+      {tab === "historico" && <HistoricoTab data={data} viewDay={viewDay} setViewDay={setViewDay} setData={setData} setMsg={setMsg} />}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
